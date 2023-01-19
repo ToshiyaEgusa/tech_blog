@@ -1,29 +1,26 @@
 require 'rails_helper'
 
 describe User do
-  # 想定としてはログインユーザーのnicknameとemailとpassword取得している
   let(:nickname) { 'テスト太郎' }
-  let(:email) { 'test1@example.com' }
-  let(:password) { '12345678' }
-  let(:user) { User.new(nickname: nickname, email: email, password: password, password_confirmation: password) }
+  let(:email) { 'test@example.com' }
+  let(:user) { User.new(nickname: nickname, email: email, password: password, password_confirmation: password) } # 変数に格納
 
   describe '.first' do
-    # もともとDBに登録されているデータ、という想定
     before do
       create(:user, nickname: nickname, email: email)
     end
 
-    # described_classはUserモデルを指す
-    # subjectは処理の結果を返す
     subject { described_class.first }
 
     it '事前に作成した通りのUserを返す' do
       expect(subject.nickname).to eq('テスト太郎')
-      expect(subject.email).to eq('test1@example.com')
+      expect(subject.email).to eq('test@example.com')
     end
   end
 
   describe 'validation' do
+    let(:password) { '12345678' }
+
     describe 'nickname属性' do
       describe '文字数制限の検証' do
         context 'nicknameが20文字以下の場合' do
@@ -41,18 +38,18 @@ describe User do
             user.valid?
 
             expect(user.valid?).to be(false)
-            expect(user.errors[:nickname]).to include('is too long (maximum is 20 characters)')
+            expect(user.errors[:nickname]).to include('は20文字以下に設定して下さい。')
           end
         end
       end
 
-      describe 'nickname存在性の検証' do
+      describe '存在性の検証' do
         context 'nicknameが空欄の場合' do
           let(:nickname) { '' }
 
           it 'User オブジェクトは無効である' do
             expect(user.valid?).to be(false)
-            expect(user.errors[:nickname]).to include("can't be blank")
+            expect(user.errors[:nickname]).to include("が入力されていません。")
           end
         end
       end
